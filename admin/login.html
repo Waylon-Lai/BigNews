@@ -55,7 +55,7 @@
       </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
   </div><!-- /.modal -->
-
+  <script src="./libs/http.js"></script>
   <script>
     $(function () {
       $('.input_sub').on('click', function (e) {
@@ -66,12 +66,12 @@
         if (userName == '' || userPsw == '') {
           // alert('账号和密码不能为空！');
           $('.modal-body>p').text('账号和密码不能为空！');
-          $('#myModal').modal('show');
+          $('#myModal').modal();
           return;
         }
         $.ajax({
           type: 'post',
-          url: 'http://localhost:8080/api/v1/admin/user/login',
+          url: BigNew.user_login,
           data: {
             username: userName,
             password: userPsw
@@ -79,17 +79,20 @@
           success: function (backData) {
             console.log(backData);
             if (backData.code == 200) {
-              // alert('登录成功');
-              $('.modal-body>p').text('登录成功！');
-              $('#myModal').modal('show');
 
               localStorage.setItem('token', backData.token);
 
-              location = './index.html';
+              // alert('登录成功');
+              $('.modal-body>p').text('登录成功！');
+              $('#myModal').modal();
+              $('#myModal').on('hidden.bs.modal',function(e){
+                location = './index.html';
+              });
+
             } else {
               // alert('账号或者密码错误！');
               $('.modal-body>p').text('账号或者密码错误！');
-              $('#myModal').modal('show');
+              $('#myModal').modal();
             }
           }
         });
