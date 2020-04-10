@@ -57,6 +57,7 @@
 
     <script>
         $(function (){
+            // 加载页面
             $.ajax({
                 type:'get',
                 url:'http://localhost:8080/api/v1/admin/user/info',
@@ -71,6 +72,14 @@
                     }
                 }
             });
+            // 登出功能
+            $('.logout').on('click',function(){
+                console.log(1);
+                if(confirm('您确定要登出吗？')){
+                    localStorage.removeItem('token');
+                    window.location = './login.html'
+                }
+            })
         })
     </script>
 </body>
