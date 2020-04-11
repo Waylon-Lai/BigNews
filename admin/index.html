@@ -33,6 +33,8 @@
         </div>
         <!-- 文章管理            -->
         <div class="level01">
+          <!-- 一开始显示二级菜单 要默认打开的页面在 href 属性中设置该页面的路径 -->
+          <!-- <a href="./article_list.html" target="main_frame" -->
           <a href="#"
             ><i class="iconfont icon-icon-article"></i><span>文章管理</span
             ><b class="iconfont icon-arrowdownl"></b
@@ -63,9 +65,7 @@
         </ul>
         <!-- 评论管理 -->
         <div class="level01">
-          <a href="./comment_list.html" target="main_frame"
-            ><i class="iconfont icon-comment"></i><span>评论管理</span></a
-          >
+          <a href="./comment_list.html" target="main_frame"><i class="iconfont icon-comment"></i><span>评论管理</span></a>
         </div>
         <!-- 个人中心 -->
         <div class="level01" id="user">
@@ -86,21 +86,26 @@
       </div>
       <!-- 右侧主体内容 -->
       <div class="main" id="main_body">
+        <!-- 一进入主页要默认打开的页面在 src 属性中设置该页面的路径 -->
         <iframe name="main_frame" src="./main_count.html" frameborder="0" style="width:100%;height:100%"></iframe>
       </div>
     </div>
+    <!-- 引入封装的HTTP文件 -->
     <script src="./libs/http.js"></script>
     <script>
       $(function () {
-        // 加载页面
+        // 一进来加载页面显示登录用户的信息
         $.ajax({
           type: "get",
           url: BigNew.user_info,
+          // 提交请求头，读取本地保存的‘令牌’token
           // headers:{
           //     'Authorization':localStorage.getItem('token')
           // },
           success: function (backData) {
+            console.log(backData);
             if (backData.code == 200) {
+              // 将用户信息加载到页面对应位置
               $(".user_info span i").text(backData.data.nickname);
               $(".user_info img").attr("src", backData.data.userPic);
               $(".user_center_link img").attr("src", backData.data.userPic);
@@ -109,12 +114,39 @@
         });
         // 登出功能
         $(".logout").on("click", function () {
-          console.log(1);
           if (confirm("您确定要登出吗？")) {
             localStorage.removeItem("token");
-            window.location = "./login.html";
+            window.location.href = "./login.html";
           }
         });
+        // 左侧一级菜单点击事件
+        $('div.level01').on('click',function(){
+          $(this).addClass('active').siblings().removeClass('active');
+          // 判断是不是一级菜单“文章管理”
+          if($(this).index() == 1){
+            // 显示就隐藏 隐藏就显示二级菜单 
+            $('ul.level02').slideToggle();
+            // 小箭头做对应旋转动画
+            $(this).find('b').toggleClass('rotate0');
+            // 点击一级菜单“文章管理” 默认显示二级菜单“文章列表”
+            // 第一种方式
+            // 1.在dom结构中设置a跳转的超链接  -->第37行
+            // 2.触发对应父亲li的点击事件
+            // $('ul.level02>li').eq(0).trigger('click');
+            // 第二种方式
+            // a标签的dom元素触发的点击事件，不仅会执行点击函数，还会触发超链接的跳转
+            // 然后通过事件冒泡触发其父亲li的点击事件
+            $('ul.level02>li:eq(0)>a')[0].click();
+            // $('ul.level02>li>a')[0].click();
+          }
+        });
+        // 左侧二级菜单点击事件
+        $('ul.level02>li').on('click',function(){
+          $(this).addClass('active').siblings().removeClass('active');
+        });
+
+
+
       });
     </script>
   </body>
