@@ -221,7 +221,7 @@
             // 5.给发表按钮绑定点击发表文章事件
             $('#release_btn').on('click',function(){
                 // 1.跳转到发表文章页面 （通过a标签的href设置）
-                // 2.触发父页面的二级菜单点击事件
+                // 2.触发父页面对应的二级菜单点击事件
                 parent.$('ul.level02>li').eq(1).trigger('click');
                 // parent.$('ul.level02>li:eq(1)').click(); //或者这种方式
             });
