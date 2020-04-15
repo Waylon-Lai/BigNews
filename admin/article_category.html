@@ -87,7 +87,7 @@
 <script src="./libs/template-web.js"></script>
 <!-- 创建一个模板 -->
 <script id="temp-list" type="text/html">
-<!-- 补充:可以给模板引擎中遍历出来的项取一个别名 这样就可以直接用别名，不需要使用$.value-->
+<!-- 补充:可以给模板引擎中遍历出来的项取一个别名 这样就可以直接用别名，不需要使用$value-->
 {{each data v}}
 <tr>
     <td>{{v.name}}</td>
@@ -197,7 +197,7 @@
                 var data = $('#myModal form').serialize();
                 // 同样要检查form表单中,需要获取数据的标签是否有name属性,以及name属性的值是否和接口的键一致.
 
-                // 发送aja请求完成新增
+                // 发送aja请求完成编辑
                 $.ajax({
                     type: 'post',
                     url: BigNew.category_edit,

@@ -84,6 +84,7 @@
     <script src="./libs/http.js"></script>
     <!-- 引入模板引擎js文件 -->
     <script src="./libs/template-web.js"></script>
+    <!-- 创建一个文章类别模板 -->
     <script id="select-list" type="text/html">
         {{each data v}}
         <option value="{{v.id}}">{{v.name}}</option>
@@ -137,7 +138,7 @@
             var editor = new E('#editor');
             editor.create();
 
-            // 5.//发布文章为: 已发布
+            // 5.发布文章为: 已发布
             $('.btn-release').on('click', function (e) {
                 e = e || window.event;
                 e.preventDefault(); //阻止submit的默认提交行为
@@ -167,7 +168,7 @@
                 });
             });
 
-            // 6.//发布文章为: 草稿
+            // 6.发布文章为: 草稿
             $('.btn-draft').on('click', function (e) {
                 e = e || window.event;
                 e.preventDefault(); //阻止submit的默认提交行为

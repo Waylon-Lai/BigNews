@@ -98,7 +98,8 @@
             <td class="text-center">{{v.date}}</td>
             <td class="text-center">{{v.state}}</td>
             <td class="text-center">
-                <a href="article_edit.html" data-id="{{v.id}}"class="btn btn-default btn-xs">编辑</a>
+                <!-- // ?articleID={{v.id}} 点击编辑按钮, 跳转到编辑页, 并且把需要编辑的文章id传过去 -->
+                <a href="article_edit.html?articleID={{v.id}}" class="btn btn-default btn-xs">编辑</a>
                 <a href="javascript:void(0);" data-id="{{v.id}}"class="btn btn-danger btn-xs delete">删除</a>
             </td>
         </tr>
@@ -144,16 +145,17 @@
                                 $('#pagination').show().next().hide();
                                 //把获取回来的数据在调用callback的时候作为实参传递
                                 callback(backData);
+                            } else if (backData.data.totalCount == 0) {
+                                // 获取到的文章总数为0  代表没有获取到数据 隐藏对应页码 显示'没有数据'的告示
+                                $('#pagination').hide().next().show();
                             } else if (backData.data.data.length == 0 && backData.data.totalPage == selectedPage - 1) {
                                 // 没有获取到当前页的文章列表数据以及获取到的新的总页数等于当前页-1 
                                 // 证明当前页已经是最后一页，并且最后一页已经没有数据了
                                 // 因此需要根据新的总页数（当前页-1）重新绘制分页结构
                                 selectedPage -= 1;
                                 $('#pagination').twbsPagination('changeTotalPages', backData.data.totalPage, selectedPage);
-                            } else if (backData.data.totalCount == 0) {
-                                // 获取到的文章总数为0  代表没有获取到数据 隐藏对应页码 显示'没有数据'的告示
-                                $('#pagination').hide().next().show();
                             }
+
                         }
                     }
                 });
@@ -219,7 +221,7 @@
                 });
             });
             // 5.给发表按钮绑定点击发表文章事件
-            $('#release_btn').on('click',function(){
+            $('#release_btn').on('click', function () {
                 // 1.跳转到发表文章页面 （通过a标签的href设置）
                 // 2.触发父页面对应的二级菜单点击事件
                 parent.$('ul.level02>li').eq(1).trigger('click');
