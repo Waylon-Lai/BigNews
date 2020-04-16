@@ -289,8 +289,6 @@
     {{each data v}}
     <li><a href="./article.html?id={{v.id}}">{{v.intro}}</a></li>
     {{/each}}
-
-
 </script>
     <!-- 六:文章类别 模板 -->
     <script id="temp-category" type="text/html">
@@ -396,8 +394,8 @@
             }
             //跳转到list.html页面,把搜索的关键词带过去
             window.location.href = './list.html?search=' + searchTxt;
-        })
-    })
+        });
+    });
 </script>
 
 </html>

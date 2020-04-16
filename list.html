@@ -11,7 +11,8 @@
     <link rel="stylesheet" type="text/css" href="css/jquery.pagination.css">
     <link rel="stylesheet" type="text/css" href="css/main.css">
     <script type="text/javascript" src="js/jquery-1.12.4.min.js"></script>
-    <script type="text/javascript" src="js/jquery.pagination.min.js"></script>
+    <!-- 引入分页插件Pagination.js文件 -->
+    <script type="text/javascript" src="./js/jquery.twbsPagination.js"></script>
 </head>
 
 <body>
@@ -135,20 +136,10 @@
                 </div>
             </div>
 
-            <div id="pagination" class="page"></div>
-            <script>
-                $(function () {
-                    $("#pagination").pagination({
-                        currentPage: 2,
-                        totalPage: 8,
-                        callback: function (current) {
-                            alert('ok!');
-                        }
-                    });
-                });
-            </script>
+
 
         </div>
+
         <div class="right_con setfl">
             <div class="common_wrap">
                 <h3><i class="fa fa-bar-chart"></i> 一周热门排行</h3>
@@ -211,7 +202,10 @@
             </div>
         </div>
     </div>
-
+    <div class="row text-center">
+        <!-- 分页插件结构 -->
+        <ul class="pagination" id="pagination"></ul>
+    </div>
     <div class="footer clearfix">
         <div class="foot_link">
             <a href="#">关于我们</a>
@@ -225,8 +219,162 @@
         <p>CopyRight © 2019 深圳大事件信息技术股份有限公司 All Rights Reserved</p>
         <p>电话：0755-****888 粤ICP备*******8号</p>
     </div>
-    <!-- 导包template -->
+    <!-- 导入模板引擎js文件 -->
     <script src="./js/template-web.js"></script>
+    <!-- 文章类别 list 模板 -->
+    <script id="temp-category" type="text/html">
+        {{each data.data v}}
+        <div class="common_news_list">
+            <a href="./article.html?id={{v.id}}" class="list_pic"><img src="{{v.cover}}" alt=""></a>
+            <h4><a href="./article.html?id={{v.id}}">{{v.title}}</a></h4>
+            <p>{{@ v.intro}}</p>
+            <div class="new_info">
+                <span>标签：{{v.category}}&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<i class="fa fa-eye"></i>&nbsp;阅读( {{v.read}}
+                    )&nbsp;&nbsp;&nbsp;<i class="fa fa-commenting"></i>&nbsp;评论( {{v.comments}} )</span>
+                <b>发布于 {{v.date}} </b>
+            </div>
+        </div>
+        {{/each}}
+    </script>
+    <!-- 最新评论 模板 -->
+    <script id="temp-comment" type="text/html">
+            {{each data v}}
+            <li>
+                <!-- substring(起始位置,截取数目) 和字符串的slice方法类似 -->
+                <span>{{v.author.substring(0,1)}}</span>
+                <b><em>{{v.author}}</em> {{v.date}} {{v.time}}说:</b>
+                <strong>{{v.intro}}</strong>
+            </li>
+            {{/each}}
+        </script>
+    <!-- 焦点关注 模板 -->
+    <script id="temp-attention" type="text/html">
+            {{each data v}}
+            <li><a href="./article.html?id={{v.id}}">{{v.intro}}</a></li>
+            {{/each}}
+        </script>
+    <!-- 文章类别 模板 -->
+    <script id="tem-category" type="text/html">
+        {{each data v}}
+        <li>
+            <a href="./list.html?categoryId={{v.id}}">{{v.name}}</a>
+        </li>
+        {{/each}}
+    </script>
 </body>
+<script>
+    $(function () {
+        // 首先要通过location中的url地址判断用户是通过何种方式进入页面的
+        var urlMethod = window.location.search.split('=')[0];
+        var urlValue = window.location.search.split('=')[1];
+
+        if (urlMethod == '?categoryId') {
+            // console.log('是通过点击首页文章类别的列表栏进入的');
+            // 发送ajax请求获取对应id的文章类别
+            $.ajax({
+                type: 'get',
+                url: 'http://localhost:8080/api/v1/index/search',
+                data: {
+                    type: urlValue //文章类别id
+                },
+                success: function (backData) {
+                    if (backData.code == 200) {
+                        //判断返回的有没有文章
+                        if (backData.data.totalCount > 0) {
+                            // 通过模板引擎把文章类别显示在页面上
+                            var resHtml = template('temp-category', backData);
+                            $('div.setfr').html('<div class="list_title"><h3>' + backData.data.data[0].category + '</h3></div>' + resHtml);
+                        } else {
+                            $('div.setfr').html('<div class="list_title"><h3>没有数据！</h3></div>');
+                        }
+                    }
+                }
+            });
+        } else if (urlMethod == '?search') {
+            // console.log('是通过点击首页的搜索按钮进入的');
+            //把搜索关键词 给解码
+            urlValue = decodeURI(urlValue);
+            // console.log(urlValue);
+            // 发送ajax请求获取与搜索内容对应的文章类别
+            $.ajax({
+                type: 'get',
+                url: 'http://localhost:8080/api/v1/index/search',
+                data: {
+                    key: urlValue //搜索内容
+                },
+                success: function (backData) {
+                    console.log(backData);
+                    if (backData.code == 200) {
+                        // 判断返回的有没有文章
+                        if (backData.data.totalCount > 0) {
+                            // 通过模板引擎把文章类别显示在页面上
+                            var resHtml = template('temp-category', backData);
+                            $('div.setfr').html('<div class="list_title"><h3>搜索：' + urlValue + '</h3></div>' + resHtml);
+                        } else {
+                            $('div.setfr').html('<div class="list_title"><h3>搜索：' + urlValue + ' 没有找到相关数据！</h3></div>');
+                        }
+                    }
+                }
+            });
+        } else {
+            // console.log('是通过直接在地址栏输入网址进入的');
+            // 应该打回到首页
+            window.location.href = './index.html';
+        }
+
+        //最新评论
+        $.ajax({
+            type: 'get',
+            url: 'http://localhost:8080/api/v1/index/latest_comment',
+            success: function (backData) {
+                if (backData.code == 200) {
+                    var reshtml = template('temp-comment', backData);
+                    $('.comment_list').html(reshtml);
+                }
+            }
+        });
+
+        //一周热门排行
+        $.ajax({
+            type: 'get',
+            url: 'http://localhost:8080/api/v1/index/rank',
+            success: function (backData) {
+                if (backData.code == 200) {
+                    for (let i = 0; i < backData.data.length; i++) {
+                        $('.content_list li').eq(i).children('a').text(backData.data[i].title);
+                        $('.content_list li').eq(i).children('a').attr('href', './article.html?id=' + backData.data[i].id);
+                    }
+                }
+            }
+        });
+
+        //焦点关注
+        $.ajax({
+            type: 'get',
+            url: 'http://localhost:8080/api/v1/index/attention',
+            success: function (backData) {
+                if (backData.code == 200) {
+                    var resHtml = template('temp-attention', backData);
+                    $('.guanzhu_list').html(resHtml);
+                }
+            }
+        });
+
+        //文章类别
+        $.ajax({
+            type: 'get',
+            url: 'http://localhost:8080/api/v1/index/category',
+            success: function (backData) {
+                if (backData.code = 200) {
+                    var resHtml = template('tem-category', backData);
+                    //设置竖着的 文章类别列表
+                    $('ul.level_two').html('<li class="up"></li>' + resHtml);
+                    //设置横着的 文章类别列表
+                    $('ul.left_menu').html(resHtml);
+                }
+            }
+        });
+    })
+</script>
 
 </html>
